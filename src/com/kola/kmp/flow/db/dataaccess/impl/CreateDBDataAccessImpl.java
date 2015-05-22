@@ -1,0 +1,686 @@
+package com.kola.kmp.flow.db.dataaccess.impl;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.LinkedHashMap;
+
+import com.kola.kmp.flow.db.DataAccessFactory;
+import com.kola.kmp.flow.db.dataaccess.CreateDBDataAccess;
+import com.kola.kmp.flow.db.dbconnectionpool.DBConnectionPoolAdapter;
+import com.kola.kmp.flow.db.dbconnectionpool.mysql.DefineDataSourceManagerIF;
+import com.kola.kmp.util.KGameLogger;
+
+public class CreateDBDataAccessImpl implements CreateDBDataAccess {
+	private static final KGameLogger logger = KGameLogger
+			.getLogger(CreateDBDataAccessImpl.class);
+
+	private DefineDataSourceManagerIF dbPool;
+
+	public CreateDBDataAccessImpl() {
+		dbPool = DBConnectionPoolAdapter.getDBConnectionPool();
+	}
+
+	@Override
+	public void checkAndCreateDB(int zoneId, int serverId) throws Exception {
+		// String create_property_in_out_record_sql =
+		// "CREATE TABLE IF NOT EXISTS aaa_1(id bigint(15) unsigned NOT NULL,role_id bigint(15) unsigned DEFAULT 0) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
+
+		String selectSql = "SELECT table_name FROM information_schema.TABLES WHERE table_name ='property_in_out_record_"
+				+ zoneId + "_" + serverId + "'";
+
+		String create_property_in_out_record_sql = "CREATE TABLE IF NOT EXISTS property_in_out_record_"
+				+ zoneId
+				+ "_"
+				+ serverId
+				+ " ("
+				+ "id bigint(15) unsigned NOT NULL AUTO_INCREMENT,"
+				+ "role_id bigint(15) unsigned DEFAULT 0,"
+				+ "UUID varchar(40) DEFAULT NULL,"
+				+ "property_type int(11) DEFAULT 0,"
+				+ "property_template_id varchar(40) DEFAULT NULL,"
+				+ "flow_type int(11) DEFAULT 0,"
+				+ "record_time datetime DEFAULT NULL,"
+				+ "remark text DEFAULT NULL,"
+				+ "PRIMARY KEY (id,record_time)"
+				+ ") ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 "
+				+ "PARTITION BY RANGE (TO_DAYS(record_time))(" +
+
+				"PARTITION P1401 VALUES LESS THAN (TO_DAYS('2014-01-01'))," +
+
+				"PARTITION P1402 VALUES LESS THAN (TO_DAYS('2014-02-01'))," +
+
+				"PARTITION P1403 VALUES LESS THAN (TO_DAYS('2014-03-01'))," +
+
+				"PARTITION P1404 VALUES LESS THAN (TO_DAYS('2014-04-01'))," +
+
+				"PARTITION P1405 VALUES LESS THAN (TO_DAYS('2014-05-01'))," +
+
+				"PARTITION P1406 VALUES LESS THAN (TO_DAYS('2014-06-01'))," +
+
+				"PARTITION P1407 VALUES LESS THAN (TO_DAYS('2014-07-01'))," +
+
+				"PARTITION P1408 VALUES LESS THAN (TO_DAYS('2014-08-01'))," +
+
+				"PARTITION P1409 VALUES LESS THAN (TO_DAYS('2014-09-01'))," +
+
+				"PARTITION P1410 VALUES LESS THAN (TO_DAYS('2014-10-01'))," +
+
+				"PARTITION P1411 VALUES LESS THAN (TO_DAYS('2014-11-01'))," +
+
+				"PARTITION P1412 VALUES LESS THAN (TO_DAYS('2014-12-01'))," +
+
+				"PARTITION P1501 VALUES LESS THAN (TO_DAYS('2015-01-01'))," +
+
+				"PARTITION P1502 VALUES LESS THAN (TO_DAYS('2015-02-01'))," +
+
+				"PARTITION P1503 VALUES LESS THAN (TO_DAYS('2015-03-01'))," +
+
+				"PARTITION P1504 VALUES LESS THAN (TO_DAYS('2015-04-01'))," +
+
+				"PARTITION P1505 VALUES LESS THAN (TO_DAYS('2015-05-01'))," +
+
+				"PARTITION P1506 VALUES LESS THAN (TO_DAYS('2015-06-01'))," +
+
+				"PARTITION P1507 VALUES LESS THAN (TO_DAYS('2015-07-01'))," +
+
+				"PARTITION P1508 VALUES LESS THAN (TO_DAYS('2015-08-01'))," +
+
+				"PARTITION P1509 VALUES LESS THAN (TO_DAYS('2015-09-01'))," +
+
+				"PARTITION P1510 VALUES LESS THAN (TO_DAYS('2015-10-01'))," +
+
+				"PARTITION P1511 VALUES LESS THAN (TO_DAYS('2015-11-01'))," +
+
+				"PARTITION P1512 VALUES LESS THAN (TO_DAYS('2015-12-01'))," +
+
+				"PARTITION P1601 VALUES LESS THAN (TO_DAYS('2016-01-01'))," +
+
+				"PARTITION P1602 VALUES LESS THAN (TO_DAYS('2016-02-01'))," +
+
+				"PARTITION P1603 VALUES LESS THAN (TO_DAYS('2016-03-01'))," +
+
+				"PARTITION P1604 VALUES LESS THAN (TO_DAYS('2016-04-01'))," +
+
+				"PARTITION P1605 VALUES LESS THAN (TO_DAYS('2016-05-01'))," +
+
+				"PARTITION P1606 VALUES LESS THAN (TO_DAYS('2016-06-01'))," +
+
+				"PARTITION P1607 VALUES LESS THAN (TO_DAYS('2016-07-01'))," +
+
+				"PARTITION P1608 VALUES LESS THAN (TO_DAYS('2016-08-01'))," +
+
+				"PARTITION P1609 VALUES LESS THAN (TO_DAYS('2016-09-01'))," +
+
+				"PARTITION P1610 VALUES LESS THAN (TO_DAYS('2016-10-01'))," +
+
+				"PARTITION P1611 VALUES LESS THAN (TO_DAYS('2016-11-01'))," +
+
+				"PARTITION P1612 VALUES LESS THAN (TO_DAYS('2016-12-01'))," +
+
+				"PARTITION P1701 VALUES LESS THAN (TO_DAYS('2017-01-01'))," +
+
+				"PARTITION P1702 VALUES LESS THAN (TO_DAYS('2017-02-01'))," +
+
+				"PARTITION P1703 VALUES LESS THAN (TO_DAYS('2017-03-01'))," +
+
+				"PARTITION P1704 VALUES LESS THAN (TO_DAYS('2017-04-01'))," +
+
+				"PARTITION P1705 VALUES LESS THAN (TO_DAYS('2017-05-01'))," +
+
+				"PARTITION P1706 VALUES LESS THAN (TO_DAYS('2017-06-01'))," +
+
+				"PARTITION P1707 VALUES LESS THAN (TO_DAYS('2017-07-01'))," +
+
+				"PARTITION P1708 VALUES LESS THAN (TO_DAYS('2017-08-01'))," +
+
+				"PARTITION P1709 VALUES LESS THAN (TO_DAYS('2017-09-01'))," +
+
+				"PARTITION P1710 VALUES LESS THAN (TO_DAYS('2017-10-01'))," +
+
+				"PARTITION P1711 VALUES LESS THAN (TO_DAYS('2017-11-01'))," +
+
+				"PARTITION P1712 VALUES LESS THAN (TO_DAYS('2017-12-01'))," +
+
+				"PARTITION P1801 VALUES LESS THAN (MAXVALUE)" + ")";
+
+		String create_property_modify_record_sql = "CREATE TABLE IF NOT EXISTS property_modify_record_"
+				+ zoneId
+				+ "_"
+				+ serverId
+				+ " ("
+				+ "id bigint(15) unsigned NOT NULL AUTO_INCREMENT,"
+				+ "role_id bigint(15) unsigned DEFAULT 0,"
+				+ "UUID varchar(40) DEFAULT NULL,"
+				+ "record_time datetime DEFAULT NULL,"
+				+ "remark text DEFAULT NULL,"
+				+ "PRIMARY KEY (id,record_time)"
+				+ ") ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 "
+				+ "PARTITION BY RANGE (TO_DAYS(record_time))(" +
+
+				"PARTITION P1401 VALUES LESS THAN (TO_DAYS('2014-01-01'))," +
+
+				"PARTITION P1402 VALUES LESS THAN (TO_DAYS('2014-02-01'))," +
+
+				"PARTITION P1403 VALUES LESS THAN (TO_DAYS('2014-03-01'))," +
+
+				"PARTITION P1404 VALUES LESS THAN (TO_DAYS('2014-04-01'))," +
+
+				"PARTITION P1405 VALUES LESS THAN (TO_DAYS('2014-05-01'))," +
+
+				"PARTITION P1406 VALUES LESS THAN (TO_DAYS('2014-06-01'))," +
+
+				"PARTITION P1407 VALUES LESS THAN (TO_DAYS('2014-07-01'))," +
+
+				"PARTITION P1408 VALUES LESS THAN (TO_DAYS('2014-08-01'))," +
+
+				"PARTITION P1409 VALUES LESS THAN (TO_DAYS('2014-09-01'))," +
+
+				"PARTITION P1410 VALUES LESS THAN (TO_DAYS('2014-10-01'))," +
+
+				"PARTITION P1411 VALUES LESS THAN (TO_DAYS('2014-11-01'))," +
+
+				"PARTITION P1412 VALUES LESS THAN (TO_DAYS('2014-12-01'))," +
+
+				"PARTITION P1501 VALUES LESS THAN (TO_DAYS('2015-01-01'))," +
+
+				"PARTITION P1502 VALUES LESS THAN (TO_DAYS('2015-02-01'))," +
+
+				"PARTITION P1503 VALUES LESS THAN (TO_DAYS('2015-03-01'))," +
+
+				"PARTITION P1504 VALUES LESS THAN (TO_DAYS('2015-04-01'))," +
+
+				"PARTITION P1505 VALUES LESS THAN (TO_DAYS('2015-05-01'))," +
+
+				"PARTITION P1506 VALUES LESS THAN (TO_DAYS('2015-06-01'))," +
+
+				"PARTITION P1507 VALUES LESS THAN (TO_DAYS('2015-07-01'))," +
+
+				"PARTITION P1508 VALUES LESS THAN (TO_DAYS('2015-08-01'))," +
+
+				"PARTITION P1509 VALUES LESS THAN (TO_DAYS('2015-09-01'))," +
+
+				"PARTITION P1510 VALUES LESS THAN (TO_DAYS('2015-10-01'))," +
+
+				"PARTITION P1511 VALUES LESS THAN (TO_DAYS('2015-11-01'))," +
+
+				"PARTITION P1512 VALUES LESS THAN (TO_DAYS('2015-12-01'))," +
+
+				"PARTITION P1601 VALUES LESS THAN (TO_DAYS('2016-01-01'))," +
+
+				"PARTITION P1602 VALUES LESS THAN (TO_DAYS('2016-02-01'))," +
+
+				"PARTITION P1603 VALUES LESS THAN (TO_DAYS('2016-03-01'))," +
+
+				"PARTITION P1604 VALUES LESS THAN (TO_DAYS('2016-04-01'))," +
+
+				"PARTITION P1605 VALUES LESS THAN (TO_DAYS('2016-05-01'))," +
+
+				"PARTITION P1606 VALUES LESS THAN (TO_DAYS('2016-06-01'))," +
+
+				"PARTITION P1607 VALUES LESS THAN (TO_DAYS('2016-07-01'))," +
+
+				"PARTITION P1608 VALUES LESS THAN (TO_DAYS('2016-08-01'))," +
+
+				"PARTITION P1609 VALUES LESS THAN (TO_DAYS('2016-09-01'))," +
+
+				"PARTITION P1610 VALUES LESS THAN (TO_DAYS('2016-10-01'))," +
+
+				"PARTITION P1611 VALUES LESS THAN (TO_DAYS('2016-11-01'))," +
+
+				"PARTITION P1612 VALUES LESS THAN (TO_DAYS('2016-12-01'))," +
+
+				"PARTITION P1701 VALUES LESS THAN (TO_DAYS('2017-01-01'))," +
+
+				"PARTITION P1702 VALUES LESS THAN (TO_DAYS('2017-02-01'))," +
+
+				"PARTITION P1703 VALUES LESS THAN (TO_DAYS('2017-03-01'))," +
+
+				"PARTITION P1704 VALUES LESS THAN (TO_DAYS('2017-04-01'))," +
+
+				"PARTITION P1705 VALUES LESS THAN (TO_DAYS('2017-05-01'))," +
+
+				"PARTITION P1706 VALUES LESS THAN (TO_DAYS('2017-06-01'))," +
+
+				"PARTITION P1707 VALUES LESS THAN (TO_DAYS('2017-07-01'))," +
+
+				"PARTITION P1708 VALUES LESS THAN (TO_DAYS('2017-08-01'))," +
+
+				"PARTITION P1709 VALUES LESS THAN (TO_DAYS('2017-09-01'))," +
+
+				"PARTITION P1710 VALUES LESS THAN (TO_DAYS('2017-10-01'))," +
+
+				"PARTITION P1711 VALUES LESS THAN (TO_DAYS('2017-11-01'))," +
+
+				"PARTITION P1712 VALUES LESS THAN (TO_DAYS('2017-12-01'))," +
+
+				"PARTITION P1801 VALUES LESS THAN (MAXVALUE)" + ")";
+
+		String create_currency_record_sql = "CREATE TABLE IF NOT EXISTS currency_record_"
+				+ zoneId
+				+ "_"
+				+ serverId
+				+ " ("
+				+ "id bigint(15) unsigned NOT NULL AUTO_INCREMENT,"
+				+ "role_id bigint(15) unsigned DEFAULT 0,"
+				+ "currency_type int(11) DEFAULT 0,"
+				+ "currency_count bigint(15) DEFAULT 0,"
+				+ "flow_type int(11) DEFAULT 0,"
+				+ "record_time datetime DEFAULT NULL,"
+				+ "remark text DEFAULT NULL,"
+				+ "PRIMARY KEY (id,record_time)"
+				+ ") ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 "
+				+ "PARTITION BY RANGE (TO_DAYS(record_time))(" +
+
+				"PARTITION P1401 VALUES LESS THAN (TO_DAYS('2014-01-01'))," +
+
+				"PARTITION P1402 VALUES LESS THAN (TO_DAYS('2014-02-01'))," +
+
+				"PARTITION P1403 VALUES LESS THAN (TO_DAYS('2014-03-01'))," +
+
+				"PARTITION P1404 VALUES LESS THAN (TO_DAYS('2014-04-01'))," +
+
+				"PARTITION P1405 VALUES LESS THAN (TO_DAYS('2014-05-01'))," +
+
+				"PARTITION P1406 VALUES LESS THAN (TO_DAYS('2014-06-01'))," +
+
+				"PARTITION P1407 VALUES LESS THAN (TO_DAYS('2014-07-01'))," +
+
+				"PARTITION P1408 VALUES LESS THAN (TO_DAYS('2014-08-01'))," +
+
+				"PARTITION P1409 VALUES LESS THAN (TO_DAYS('2014-09-01'))," +
+
+				"PARTITION P1410 VALUES LESS THAN (TO_DAYS('2014-10-01'))," +
+
+				"PARTITION P1411 VALUES LESS THAN (TO_DAYS('2014-11-01'))," +
+
+				"PARTITION P1412 VALUES LESS THAN (TO_DAYS('2014-12-01'))," +
+
+				"PARTITION P1501 VALUES LESS THAN (TO_DAYS('2015-01-01'))," +
+
+				"PARTITION P1502 VALUES LESS THAN (TO_DAYS('2015-02-01'))," +
+
+				"PARTITION P1503 VALUES LESS THAN (TO_DAYS('2015-03-01'))," +
+
+				"PARTITION P1504 VALUES LESS THAN (TO_DAYS('2015-04-01'))," +
+
+				"PARTITION P1505 VALUES LESS THAN (TO_DAYS('2015-05-01'))," +
+
+				"PARTITION P1506 VALUES LESS THAN (TO_DAYS('2015-06-01'))," +
+
+				"PARTITION P1507 VALUES LESS THAN (TO_DAYS('2015-07-01'))," +
+
+				"PARTITION P1508 VALUES LESS THAN (TO_DAYS('2015-08-01'))," +
+
+				"PARTITION P1509 VALUES LESS THAN (TO_DAYS('2015-09-01'))," +
+
+				"PARTITION P1510 VALUES LESS THAN (TO_DAYS('2015-10-01'))," +
+
+				"PARTITION P1511 VALUES LESS THAN (TO_DAYS('2015-11-01'))," +
+
+				"PARTITION P1512 VALUES LESS THAN (TO_DAYS('2015-12-01'))," +
+
+				"PARTITION P1601 VALUES LESS THAN (TO_DAYS('2016-01-01'))," +
+
+				"PARTITION P1602 VALUES LESS THAN (TO_DAYS('2016-02-01'))," +
+
+				"PARTITION P1603 VALUES LESS THAN (TO_DAYS('2016-03-01'))," +
+
+				"PARTITION P1604 VALUES LESS THAN (TO_DAYS('2016-04-01'))," +
+
+				"PARTITION P1605 VALUES LESS THAN (TO_DAYS('2016-05-01'))," +
+
+				"PARTITION P1606 VALUES LESS THAN (TO_DAYS('2016-06-01'))," +
+
+				"PARTITION P1607 VALUES LESS THAN (TO_DAYS('2016-07-01'))," +
+
+				"PARTITION P1608 VALUES LESS THAN (TO_DAYS('2016-08-01'))," +
+
+				"PARTITION P1609 VALUES LESS THAN (TO_DAYS('2016-09-01'))," +
+
+				"PARTITION P1610 VALUES LESS THAN (TO_DAYS('2016-10-01'))," +
+
+				"PARTITION P1611 VALUES LESS THAN (TO_DAYS('2016-11-01'))," +
+
+				"PARTITION P1612 VALUES LESS THAN (TO_DAYS('2016-12-01'))," +
+
+				"PARTITION P1701 VALUES LESS THAN (TO_DAYS('2017-01-01'))," +
+
+				"PARTITION P1702 VALUES LESS THAN (TO_DAYS('2017-02-01'))," +
+
+				"PARTITION P1703 VALUES LESS THAN (TO_DAYS('2017-03-01'))," +
+
+				"PARTITION P1704 VALUES LESS THAN (TO_DAYS('2017-04-01'))," +
+
+				"PARTITION P1705 VALUES LESS THAN (TO_DAYS('2017-05-01'))," +
+
+				"PARTITION P1706 VALUES LESS THAN (TO_DAYS('2017-06-01'))," +
+
+				"PARTITION P1707 VALUES LESS THAN (TO_DAYS('2017-07-01'))," +
+
+				"PARTITION P1708 VALUES LESS THAN (TO_DAYS('2017-08-01'))," +
+
+				"PARTITION P1709 VALUES LESS THAN (TO_DAYS('2017-09-01'))," +
+
+				"PARTITION P1710 VALUES LESS THAN (TO_DAYS('2017-10-01'))," +
+
+				"PARTITION P1711 VALUES LESS THAN (TO_DAYS('2017-11-01'))," +
+
+				"PARTITION P1712 VALUES LESS THAN (TO_DAYS('2017-12-01'))," +
+
+				"PARTITION P1801 VALUES LESS THAN (MAXVALUE)" + ")";
+
+		String create_experience_record_sql = "CREATE TABLE IF NOT EXISTS experience_record_"
+				+ zoneId
+				+ "_"
+				+ serverId
+				+ " ("
+				+ "id bigint(15) unsigned NOT NULL AUTO_INCREMENT,"
+				+ "role_id bigint(15) unsigned DEFAULT 0,"
+				+ "exp_count int(11) DEFAULT 0,"
+				+ "record_time datetime DEFAULT NULL,"
+				+ "remark text DEFAULT NULL,"
+				+ "PRIMARY KEY (id,record_time)"
+				+ ") ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 "
+				+ "PARTITION BY RANGE (TO_DAYS(record_time))(" +
+
+				"PARTITION P1401 VALUES LESS THAN (TO_DAYS('2014-01-01'))," +
+
+				"PARTITION P1402 VALUES LESS THAN (TO_DAYS('2014-02-01'))," +
+
+				"PARTITION P1403 VALUES LESS THAN (TO_DAYS('2014-03-01'))," +
+
+				"PARTITION P1404 VALUES LESS THAN (TO_DAYS('2014-04-01'))," +
+
+				"PARTITION P1405 VALUES LESS THAN (TO_DAYS('2014-05-01'))," +
+
+				"PARTITION P1406 VALUES LESS THAN (TO_DAYS('2014-06-01'))," +
+
+				"PARTITION P1407 VALUES LESS THAN (TO_DAYS('2014-07-01'))," +
+
+				"PARTITION P1408 VALUES LESS THAN (TO_DAYS('2014-08-01'))," +
+
+				"PARTITION P1409 VALUES LESS THAN (TO_DAYS('2014-09-01'))," +
+
+				"PARTITION P1410 VALUES LESS THAN (TO_DAYS('2014-10-01'))," +
+
+				"PARTITION P1411 VALUES LESS THAN (TO_DAYS('2014-11-01'))," +
+
+				"PARTITION P1412 VALUES LESS THAN (TO_DAYS('2014-12-01'))," +
+
+				"PARTITION P1501 VALUES LESS THAN (TO_DAYS('2015-01-01'))," +
+
+				"PARTITION P1502 VALUES LESS THAN (TO_DAYS('2015-02-01'))," +
+
+				"PARTITION P1503 VALUES LESS THAN (TO_DAYS('2015-03-01'))," +
+
+				"PARTITION P1504 VALUES LESS THAN (TO_DAYS('2015-04-01'))," +
+
+				"PARTITION P1505 VALUES LESS THAN (TO_DAYS('2015-05-01'))," +
+
+				"PARTITION P1506 VALUES LESS THAN (TO_DAYS('2015-06-01'))," +
+
+				"PARTITION P1507 VALUES LESS THAN (TO_DAYS('2015-07-01'))," +
+
+				"PARTITION P1508 VALUES LESS THAN (TO_DAYS('2015-08-01'))," +
+
+				"PARTITION P1509 VALUES LESS THAN (TO_DAYS('2015-09-01'))," +
+
+				"PARTITION P1510 VALUES LESS THAN (TO_DAYS('2015-10-01'))," +
+
+				"PARTITION P1511 VALUES LESS THAN (TO_DAYS('2015-11-01'))," +
+
+				"PARTITION P1512 VALUES LESS THAN (TO_DAYS('2015-12-01'))," +
+
+				"PARTITION P1601 VALUES LESS THAN (TO_DAYS('2016-01-01'))," +
+
+				"PARTITION P1602 VALUES LESS THAN (TO_DAYS('2016-02-01'))," +
+
+				"PARTITION P1603 VALUES LESS THAN (TO_DAYS('2016-03-01'))," +
+
+				"PARTITION P1604 VALUES LESS THAN (TO_DAYS('2016-04-01'))," +
+
+				"PARTITION P1605 VALUES LESS THAN (TO_DAYS('2016-05-01'))," +
+
+				"PARTITION P1606 VALUES LESS THAN (TO_DAYS('2016-06-01'))," +
+
+				"PARTITION P1607 VALUES LESS THAN (TO_DAYS('2016-07-01'))," +
+
+				"PARTITION P1608 VALUES LESS THAN (TO_DAYS('2016-08-01'))," +
+
+				"PARTITION P1609 VALUES LESS THAN (TO_DAYS('2016-09-01'))," +
+
+				"PARTITION P1610 VALUES LESS THAN (TO_DAYS('2016-10-01'))," +
+
+				"PARTITION P1611 VALUES LESS THAN (TO_DAYS('2016-11-01'))," +
+
+				"PARTITION P1612 VALUES LESS THAN (TO_DAYS('2016-12-01'))," +
+
+				"PARTITION P1701 VALUES LESS THAN (TO_DAYS('2017-01-01'))," +
+
+				"PARTITION P1702 VALUES LESS THAN (TO_DAYS('2017-02-01'))," +
+
+				"PARTITION P1703 VALUES LESS THAN (TO_DAYS('2017-03-01'))," +
+
+				"PARTITION P1704 VALUES LESS THAN (TO_DAYS('2017-04-01'))," +
+
+				"PARTITION P1705 VALUES LESS THAN (TO_DAYS('2017-05-01'))," +
+
+				"PARTITION P1706 VALUES LESS THAN (TO_DAYS('2017-06-01'))," +
+
+				"PARTITION P1707 VALUES LESS THAN (TO_DAYS('2017-07-01'))," +
+
+				"PARTITION P1708 VALUES LESS THAN (TO_DAYS('2017-08-01'))," +
+
+				"PARTITION P1709 VALUES LESS THAN (TO_DAYS('2017-09-01'))," +
+
+				"PARTITION P1710 VALUES LESS THAN (TO_DAYS('2017-10-01'))," +
+
+				"PARTITION P1711 VALUES LESS THAN (TO_DAYS('2017-11-01'))," +
+
+				"PARTITION P1712 VALUES LESS THAN (TO_DAYS('2017-12-01'))," +
+
+				"PARTITION P1801 VALUES LESS THAN (MAXVALUE)" + ")";
+
+		String create_other_log_record_sql = "CREATE TABLE IF NOT EXISTS other_log_record_"
+				+ zoneId
+				+ "_"
+				+ serverId
+				+ " ("
+				+ "id bigint(15) unsigned NOT NULL AUTO_INCREMENT,"
+				+ "role_id bigint(15) unsigned DEFAULT 0,"
+				+ "flow_type int(11) DEFAULT 0,"
+				+ "record_time datetime DEFAULT NULL,"
+				+ "remark text DEFAULT NULL,"
+				+ "PRIMARY KEY (id,record_time)"
+				+ ") ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 "
+				+ "PARTITION BY RANGE (TO_DAYS(record_time))(" +
+
+				"PARTITION P1401 VALUES LESS THAN (TO_DAYS('2014-01-01'))," +
+
+				"PARTITION P1402 VALUES LESS THAN (TO_DAYS('2014-02-01'))," +
+
+				"PARTITION P1403 VALUES LESS THAN (TO_DAYS('2014-03-01'))," +
+
+				"PARTITION P1404 VALUES LESS THAN (TO_DAYS('2014-04-01'))," +
+
+				"PARTITION P1405 VALUES LESS THAN (TO_DAYS('2014-05-01'))," +
+
+				"PARTITION P1406 VALUES LESS THAN (TO_DAYS('2014-06-01'))," +
+
+				"PARTITION P1407 VALUES LESS THAN (TO_DAYS('2014-07-01'))," +
+
+				"PARTITION P1408 VALUES LESS THAN (TO_DAYS('2014-08-01'))," +
+
+				"PARTITION P1409 VALUES LESS THAN (TO_DAYS('2014-09-01'))," +
+
+				"PARTITION P1410 VALUES LESS THAN (TO_DAYS('2014-10-01'))," +
+
+				"PARTITION P1411 VALUES LESS THAN (TO_DAYS('2014-11-01'))," +
+
+				"PARTITION P1412 VALUES LESS THAN (TO_DAYS('2014-12-01'))," +
+
+				"PARTITION P1501 VALUES LESS THAN (TO_DAYS('2015-01-01'))," +
+
+				"PARTITION P1502 VALUES LESS THAN (TO_DAYS('2015-02-01'))," +
+
+				"PARTITION P1503 VALUES LESS THAN (TO_DAYS('2015-03-01'))," +
+
+				"PARTITION P1504 VALUES LESS THAN (TO_DAYS('2015-04-01'))," +
+
+				"PARTITION P1505 VALUES LESS THAN (TO_DAYS('2015-05-01'))," +
+
+				"PARTITION P1506 VALUES LESS THAN (TO_DAYS('2015-06-01'))," +
+
+				"PARTITION P1507 VALUES LESS THAN (TO_DAYS('2015-07-01'))," +
+
+				"PARTITION P1508 VALUES LESS THAN (TO_DAYS('2015-08-01'))," +
+
+				"PARTITION P1509 VALUES LESS THAN (TO_DAYS('2015-09-01'))," +
+
+				"PARTITION P1510 VALUES LESS THAN (TO_DAYS('2015-10-01'))," +
+
+				"PARTITION P1511 VALUES LESS THAN (TO_DAYS('2015-11-01'))," +
+
+				"PARTITION P1512 VALUES LESS THAN (TO_DAYS('2015-12-01'))," +
+
+				"PARTITION P1601 VALUES LESS THAN (TO_DAYS('2016-01-01'))," +
+
+				"PARTITION P1602 VALUES LESS THAN (TO_DAYS('2016-02-01'))," +
+
+				"PARTITION P1603 VALUES LESS THAN (TO_DAYS('2016-03-01'))," +
+
+				"PARTITION P1604 VALUES LESS THAN (TO_DAYS('2016-04-01'))," +
+
+				"PARTITION P1605 VALUES LESS THAN (TO_DAYS('2016-05-01'))," +
+
+				"PARTITION P1606 VALUES LESS THAN (TO_DAYS('2016-06-01'))," +
+
+				"PARTITION P1607 VALUES LESS THAN (TO_DAYS('2016-07-01'))," +
+
+				"PARTITION P1608 VALUES LESS THAN (TO_DAYS('2016-08-01'))," +
+
+				"PARTITION P1609 VALUES LESS THAN (TO_DAYS('2016-09-01'))," +
+
+				"PARTITION P1610 VALUES LESS THAN (TO_DAYS('2016-10-01'))," +
+
+				"PARTITION P1611 VALUES LESS THAN (TO_DAYS('2016-11-01'))," +
+
+				"PARTITION P1612 VALUES LESS THAN (TO_DAYS('2016-12-01'))," +
+
+				"PARTITION P1701 VALUES LESS THAN (TO_DAYS('2017-01-01'))," +
+
+				"PARTITION P1702 VALUES LESS THAN (TO_DAYS('2017-02-01'))," +
+
+				"PARTITION P1703 VALUES LESS THAN (TO_DAYS('2017-03-01'))," +
+
+				"PARTITION P1704 VALUES LESS THAN (TO_DAYS('2017-04-01'))," +
+
+				"PARTITION P1705 VALUES LESS THAN (TO_DAYS('2017-05-01'))," +
+
+				"PARTITION P1706 VALUES LESS THAN (TO_DAYS('2017-06-01'))," +
+
+				"PARTITION P1707 VALUES LESS THAN (TO_DAYS('2017-07-01'))," +
+
+				"PARTITION P1708 VALUES LESS THAN (TO_DAYS('2017-08-01'))," +
+
+				"PARTITION P1709 VALUES LESS THAN (TO_DAYS('2017-09-01'))," +
+
+				"PARTITION P1710 VALUES LESS THAN (TO_DAYS('2017-10-01'))," +
+
+				"PARTITION P1711 VALUES LESS THAN (TO_DAYS('2017-11-01'))," +
+
+				"PARTITION P1712 VALUES LESS THAN (TO_DAYS('2017-12-01'))," +
+
+				"PARTITION P1801 VALUES LESS THAN (MAXVALUE)" + ")";
+
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		boolean hasTable = false;
+
+		try {
+			con = dbPool.getConnection();
+			logger.error("*** " + selectSql);
+			ps = con.prepareStatement(selectSql,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_READ_ONLY);
+
+			rs = dbPool.executeQuery(ps);
+			if (rs != null && rs.next()) {
+				hasTable = true;
+				logger.error("### zoneId={}，serverId={}的表已存在，不用创建。");
+			}
+
+			if (!hasTable) {
+				ps.clearParameters();
+				ps.close();
+
+				ps = dbPool.writeStatement(con,
+						create_property_in_out_record_sql);
+				ps.execute();
+
+				logger.error("### 创建表property_in_out_record_" + zoneId + "_"
+						+ serverId);
+
+				ps.clearParameters();
+				ps.close();
+
+				ps = dbPool.writeStatement(con,
+						create_property_modify_record_sql);
+
+				ps.execute();
+				logger.error("### 创建表property_modify_record_" + zoneId + "_"
+						+ serverId);
+
+				ps.clearParameters();
+				ps.close();
+
+				ps = dbPool.writeStatement(con, create_currency_record_sql);
+
+				ps.execute();
+				logger.error("### 创建表currency_record_" + zoneId + "_"
+						+ serverId);
+
+				ps.clearParameters();
+				ps.close();
+
+				ps = dbPool.writeStatement(con, create_experience_record_sql);
+
+				ps.execute();
+				logger.error("### 创建表experience_record_" + zoneId + "_"
+						+ serverId);
+
+				ps.clearParameters();
+				ps.close();
+
+				ps = dbPool.writeStatement(con, create_other_log_record_sql);
+
+				ps.execute();
+				logger.error("### 创建表other_log_record_" + zoneId + "_"
+						+ serverId);
+			}
+
+		} catch (SQLException ex) {
+			logger.error("", ex);
+		} finally {
+			dbPool.closeResultSet(rs);
+			dbPool.closePreparedStatement(ps);
+			dbPool.closeConnection(con);
+		}
+
+	}
+
+	public static void main(String[] args) {
+		DBConnectionPoolAdapter.init();
+
+		CreateDBDataAccess access = DataAccessFactory.getCreateDBDataAccess();
+		try {
+			access.checkAndCreateDB(1, 1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+}

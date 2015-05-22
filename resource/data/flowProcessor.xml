@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  	<processModel flowType="11" clazz="com.kola.kmp.flowPara.CurrencyFlowRecordTemplate"></processModel>
+	<processModel flowType="15" clazz="com.kola.kmp.flowPara.OtherFlowTemplate"></processModel>
+	<processModel flowType="13" clazz="com.kola.kmp.flowPara.TreasureModifyRecordTemplate"></processModel>
+	<processModel flowType="12" clazz="com.kola.kmp.flowPara.TreasureFlowRecordTemplate"></processModel>
+	<processModel flowType="14" clazz="com.kola.kmp.flowPara.ExpFlowTemplate"></processModel>
+</root>

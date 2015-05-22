@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+
+	<logFilePath>./logFolder</logFilePath><!-- 同步日志文件的文件夹路径 -->
+
+	<readFilePath>./resource/data/readFileNameList.xml</readFilePath><!-- 已读日志文件名列表路径 -->
+
+	<scanFileUnit>30</scanFileUnit><!-- 扫描同步文件的时间间隔  单位 秒-->
+
+	<scanTime>04:30:30,23:30:00</scanTime><!-- 扫描同步文件的时间段      开始时间和结束时间 -->
+
+	<processorPath>./resource/data/flowProcessor.xml</processorPath><!-- 各流水处理模板 -->
+	
+	<!-- time base task settings.TimeUnit="MILLISECONDS",'handler' is optional -->
+	<Timer corePoolSize="8" tickDuration="100" ticksPerWheel="64">
+		<handler clazz="com.kola.kmp.util.timer._ExampleTimerHandler">
+			<!-- 注：以下内容前提条件是上面的‘handler’参数有效 -->
+			<!-- 如果希望把一些固定任务写在配置文件上，可写在下面，当服务器启动后引擎底层将通过KGameTimerHandler传递给使用者。 下面的参数都可以自定义，因为最终是交给使用者解析并提交KGameTimer执行 -->
+			<!--example: <TimerTask name="taskName" clazz="xx.xx.xxx" firstExecuteTime="20120928200000"></TimerTask> -->
+		</handler>
+
+		<!-- 可以设多个handler组 -->
+	</Timer>
+</root>
